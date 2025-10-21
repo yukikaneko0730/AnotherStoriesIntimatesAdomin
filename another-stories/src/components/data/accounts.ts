@@ -1,0 +1,62 @@
+export const accounts = {
+  headquarters: [
+    {
+      id: 1,
+      name: "Head Office - Paris",
+      role: "HQ",
+      email: "hq@anotherstories.com",
+      status: "Active",
+      image: "/avatars/hq.png",
+    },
+  ],
+  branches: [
+    {
+      id: 2,
+      name: "London Boutique",
+      role: "Branch",
+      email: "london@anotherstories.com",
+      status: "Active",
+      image: "/avatars/london.png",
+    },
+    {
+      id: 3,
+      name: "Berlin Studio",
+      role: "Branch",
+      email: "berlin@anotherstories.com",
+      status: "Active",
+      image: "/avatars/berlin.png",
+    },
+    {
+      id: 4,
+      name: "Copenhagen Atelier",
+      role: "Branch",
+      email: "cph@anotherstories.com",
+      status: "Active",
+      image: "/avatars/cph.png",
+    },
+    {
+      id: 5,
+      name: "Milan Gallery",
+      role: "Branch",
+      email: "milan@anotherstories.com",
+      status: "Inactive",
+      image: "/avatars/milan.png",
+    },
+    {
+      id: 6,
+      name: "Stockholm Salon",
+      role: "Branch",
+      email: "stockholm@anotherstories.com",
+      status: "Active",
+      image: "/avatars/stockholm.png",
+    },
+  ],
+  individuals: Array.from({ length: 30 }).map((_, i) => ({
+    id: i + 7,
+    name: `Staff ${i + 1}`,
+    role: "Personal Account",
+    email: `staff${i + 1}@anotherstories.com`,
+    status: i % 5 === 0 ? "Inactive" : "Active",
+    image: "/avatars/user.png",
+  })),
+};

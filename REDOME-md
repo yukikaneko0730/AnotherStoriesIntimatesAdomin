@@ -1,0 +1,136 @@
+🌷 Another Stories Intimates Admin
+
+A feminine, poetic approach to retail management —
+because even closing numbers can tell a beautiful story.
+
+🩰 Overview
+
+Another Stories Intimates Admin is a concept admin system inspired by the lingerie brand Love Stories.
+It’s designed for boutique staff and managers who value beauty, warmth, and emotional connection — even in everyday tasks like reporting sales or managing shifts.
+
+This project reimagines the admin dashboard as a soft, human workspace — elegant, intuitive, and emotionally engaging.
+
+✨ Concept
+
+Unlike typical admin tools that feel mechanical or cold,
+this interface invites users to pause, reflect, and record their “daily story.”
+It blends functional clarity with a sense of intimacy,
+transforming daily management into a personal ritual.
+
+🕊️ Because behind every number, there’s a story.
+
+🧩 Features
+🏢 HQ (Headquarters)
+
+Overview dashboard (sales, staff activity, events)
+
+Employee database (employment type, wage, contact info, notes)
+
+Store performance summaries
+
+Editable event calendar
+
+Inter-store chat and internal blog view
+
+🏬 Store Branch
+
+Daily report input (sales, returns, notes)
+
+Local dashboard with charts
+
+Shift scheduling and editing
+
+Chat and blog access
+
+Calendar editing for store events
+
+👩‍💼 Individual Staff
+
+Personal shift view
+
+Profile editing (photo, contact, role)
+
+Internal chat and blog access
+
+Calendar sync with store schedule
+
+🎨 Design Direction
+
+A gentle mix of professional minimalism and soft femininity.
+The design draws inspiration from lingerie textures — subtle, intimate, yet structured.
+
+Element	Style
+Color Palette	Soft Ivory #FFF8F4, Dusty Rose #EBD4CF, Terracotta #D98C6A, Mauve Taupe #B58B8B, Sage #B6C4AA
+Typography	Playfair Display (titles) × Inter (UI)
+UI Tone	Rounded corners, airy spacing, calm gradients, and subtle animations
+Microcopy	“Beautifully saved — your story is complete.” 🌷
+🛠️ Tech Stack
+
+React + TypeScript
+
+Firebase (Auth, Firestore, Storage)
+
+Tailwind CSS
+
+Framer Motion for soft animations
+
+Recharts for data visualization
+
+🌿 UX Keywords
+
+softness · transparency · self-expression · rhythm · care
+
+💬 Future Plans
+
+Push notifications for staff chat
+
+Analytics dashboard for HQ
+
+Shift auto-generation system
+
+
+🕊️ Author
+
+Designed & Developed by [Your Name]
+A full-stack & UX designer exploring how beauty and functionality can coexist — even in admin systems.
+
+🧡 Motto
+
+“Work that feels as soft as silk.
+Every report, every day — another story to tell.”
+
+
+
+# --- Base ---
+npx create-next-app@latest another-stories --typescript --eslint
+
+# --- UI & Styling ---
+npm install -D tailwindcss postcss autoprefixer
+npx tailwindcss init -p
+npx shadcn-ui@latest init
+npx shadcn-ui@latest add button card input textarea dialog toast tabs table calendar
+npm install @radix-ui/react-dropdown-menu
+npm install @radix-ui/react-popover
+npm install @radix-ui/react-dialog 
+npm install @radix-ui/react-switch
+npm install @radix-ui/react-dialog
+npm install sonner
+npm install framer-motion sonner
+npm install react-confetti framer-motion
+npm install react-use
+npm install canvas-confetti
+npm install --save-dev @types/canvas-confetti
+
+
+
+# --- State & Animations ---
+npm install zustand framer-motion
+
+# --- Firebase ---
+npm install firebase
+
+# --- Helpers ---
+npm install classnames date-fns react-hook-form zod lucide-react
+
+# --- Charts (optional) ---
+npm install recharts
