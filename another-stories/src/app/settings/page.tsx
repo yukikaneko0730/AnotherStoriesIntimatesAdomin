@@ -39,7 +39,7 @@ export default function SettingsPage() {
     setOpen(true)
   }
 
-  // 🎈 誕生日が近いスタッフを検出してアニメーションを表示
+  // 🎈 
   useEffect(() => {
     const today = new Date()
     const upcoming = staff.find((s) => {

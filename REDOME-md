@@ -103,6 +103,9 @@ Every report, every day — another story to tell.”
 
 # --- Base ---
 npx create-next-app@latest another-stories --typescript --eslint
+npm install ts-node
+
+
 
 # --- UI & Styling ---
 npm install -D tailwindcss postcss autoprefixer
@@ -128,6 +131,8 @@ npm install zustand framer-motion
 
 # --- Firebase ---
 npm install firebase
+npm install firebase-admin
+
 
 # --- Helpers ---
 npm install classnames date-fns react-hook-form zod lucide-react

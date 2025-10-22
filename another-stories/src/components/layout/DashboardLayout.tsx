@@ -1,7 +1,7 @@
 //components/layout/DashboardLayout.tsx
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import Link from "next/link"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Separator } from "@/components/ui/separator"
@@ -19,42 +19,57 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 import { Menu, Bell, Search } from "lucide-react"
 import Image from "next/image"
 import { DialogTitle } from "@radix-ui/react-dialog"
+import { useAuth } from "@/context/AuthContext"
 
-// ─────────────────────────────
-// Simulated user role
-// Later, you’ll replace this with Firebase Auth
-// ─────────────────────────────
 type UserRole = "HQ" | "Store" | "Staff"
+
+interface NavLink {
+  label: string
+  href: string
+  icon: string
+}
+
+interface Notification {
+  id: number
+  icon: string
+  text: string
+  time: string
+}
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  // ✅ Get user data and role from AuthContext
+  const { user, role, loading } = useAuth()
+
   const [open, setOpen] = useState(false)
   const [notifOpen, setNotifOpen] = useState(false)
-  const [role, setRole] = useState<UserRole>("Staff") // default: Staff
 
-  // ⚙️ Simulate login role (for now)
-  useEffect(() => {
-    // Example: simulate a logged-in HQ user
-    const simulatedRole: UserRole = "HQ"
-    setRole(simulatedRole)
-  }, [])
+  // ✅ Loading state
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-accent1 text-xl">
+        Loading your dashboard...
+      </div>
+    )
+  }
 
-  const notifications = [
-    { id: 1, icon: "💌", text: "New message from Emma", time: "2m ago" },
-    { id: 2, icon: "🧾", text: "Report submitted by SOHO Store", time: "1h ago" },
-    { id: 3, icon: "🪞", text: "Profile updated successfully", time: "Yesterday" },
-  ]
+  // ✅ Handle no user or role
+  if (!user || !role) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-accent2 text-xl">
+        Access denied. Please log in again.
+      </div>
+    )
+  }
 
-  // ─────────────────────────────
-  // Role-based navigation links
-  // ─────────────────────────────
-  const navLinks: Record<UserRole, { label: string; href: string; icon: string }[]> = {
+  // ✅ Role-based navigation links
+  const navLinks: Record<UserRole, NavLink[]> = {
     HQ: [
       { label: "Dashboard", href: "/hq/dashboard", icon: "📊" },
-      { label: "Branches", href: "/hq/settings", icon: "🏬" },
+      { label: "Branches", href: "/hq/branches", icon: "🏬" },
       { label: "Reports", href: "/hq/reports", icon: "🧾" },
       { label: "Chats", href: "/hq/chats", icon: "💬" },
       { label: "Settings", href: "/hq/settings", icon: "⚙️" },
@@ -74,7 +89,15 @@ export default function DashboardLayout({
     ],
   }
 
-  const currentLinks = navLinks[role]
+  const currentLinks = role && (["HQ", "Store", "Staff"] as const).includes(role as UserRole)
+    ? navLinks[role as UserRole]
+    : []
+
+  const notifications: Notification[] = [
+    { id: 1, icon: "💌", text: "New message from Emma", time: "2m ago" },
+    { id: 2, icon: "🧾", text: "Report submitted by SOHO Store", time: "1h ago" },
+    { id: 3, icon: "🪞", text: "Profile updated successfully", time: "Yesterday" },
+  ]
 
   // ─────────────────────────────
   // Layout
@@ -90,7 +113,7 @@ export default function DashboardLayout({
         </h2>
 
         <nav className="flex flex-col gap-3 text-neutral/90">
-          {currentLinks.map((link) => (
+          {currentLinks.map((link: NavLink) => (
             <Link
               key={link.href}
               href={link.href}
@@ -124,7 +147,7 @@ export default function DashboardLayout({
           </h2>
 
           <nav className="flex flex-col gap-3 text-neutral/90">
-            {currentLinks.map((link) => (
+            {currentLinks.map((link: NavLink) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -182,8 +205,11 @@ export default function DashboardLayout({
                   <button className="text-xs text-accent1 hover:underline">Mark all as read</button>
                 </div>
                 <ul className="max-h-80 overflow-auto">
-                  {notifications.map((n) => (
-                    <li key={n.id} className="flex items-start gap-3 px-4 py-3 hover:bg-surface/40 transition">
+                  {notifications.map((n: Notification) => (
+                    <li
+                      key={n.id}
+                      className="flex items-start gap-3 px-4 py-3 hover:bg-surface/40 transition"
+                    >
                       <span className="text-lg leading-none">{n.icon}</span>
                       <div className="flex-1">
                         <p className="text-sm text-neutral">{n.text}</p>
