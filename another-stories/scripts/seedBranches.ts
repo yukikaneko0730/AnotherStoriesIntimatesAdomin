@@ -16,6 +16,7 @@ const db = getFirestore();
 // 🌿 Dummy Branch Data
 // -----------------------------
 const branches = [
+    
   {
     id: "paris",
     name: "Paris Branch",

@@ -90,6 +90,7 @@ const users = [
     branchId: "copenhagen",
     role: "employee",
   },
+  
 ];
 
 // Send to Firestore
