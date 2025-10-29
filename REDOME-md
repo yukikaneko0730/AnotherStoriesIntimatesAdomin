@@ -123,6 +123,7 @@ npm install react-confetti framer-motion
 npm install react-use
 npm install canvas-confetti
 npm install --save-dev @types/canvas-confetti
+npm install emoji-picker-react
 
 
 

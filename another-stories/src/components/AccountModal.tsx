@@ -1,7 +1,12 @@
-//components/AccountModal.tsx
+//components/ui/AccountModal.tsx
 "use client"
 
-import { Dialog, DialogContent, DialogOverlay, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import {
@@ -13,232 +18,287 @@ import {
 } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import { VisuallyHidden } from "@radix-ui/react-visually-hidden" // 👈 追加
+import Image from "next/image"
 
-interface Account {
-  id: number
+// ─────────────── Types ───────────────
+interface Branch {
+  id: string
   name: string
-  role: string
+  address: string
+  manager: string
+  phone: string
+  founded: string
   email: string
-  status: "Active" | "On Leave"
-  image: string
-  type?: "HQ" | "Branch" | "Staff"
-  branch?: string
-  phone?: string
+}
+
+interface User {
+  id: string
+  firstName: string
+  lastName: string
+  email: string
   address?: string
-  founded?: string
-  startDate?: string
-  birthday?: string
+  phone?: string
+  bankNumber?: string
+  avatar?: string
+  branchId: string
+  joined: string
+  role: "HQ Staff" | "Branch Manager" | "Full-time" | "Part-time" | "Mini-job"
   salaryType?: "monthly" | "hourly"
   salaryAmount?: string
-  bankNumber?: string
 }
+
+type EditableAccount = Branch | User
 
 interface AccountModalProps {
   open: boolean
   setOpen: (v: boolean) => void
-  account: Account
+  account: EditableAccount
+  onSave?: (updated: EditableAccount) => void | Promise<void>
 }
 
-export function AccountModal({ open, setOpen, account }: AccountModalProps) {
-  const [form, setForm] = useState<Account>(account)
+// ─────────────── Type Guards ───────────────
+const isUser = (data: EditableAccount): data is User =>
+  "firstName" in data && "role" in data
+const isBranch = (data: EditableAccount): data is Branch =>
+  "manager" in data && "founded" in data
 
-  const handleChange = (key: keyof Account, value: string) => {
+// ─────────────── Component ───────────────
+export function AccountModal({
+  open,
+  setOpen,
+  account,
+  onSave,
+}: AccountModalProps) {
+  const [form, setForm] = useState<EditableAccount>(account)
+
+  const handleChange = (key: string, value: any) => {
     setForm({ ...form, [key]: value })
   }
 
-  const handleSave = () => {
-    console.log("💾 Saved:", form)
+  const handleSubmit = () => {
+    onSave?.(form)
     setOpen(false)
   }
 
-  const isBranchOrHQ = form.type === "HQ" || form.type === "Branch"
-  const isBranchRole = ["Manager", "Full-time", "Part-time", "Mini-job"].includes(form.role)
-  const isHourlyRole = ["Part-time", "Mini-job"].includes(form.role)
-
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogOverlay />
-      <DialogContent className="bg-base/95 border border-accent3/40 p-6 rounded-2xl shadow-xl max-w-lg w-full animate-in fade-in zoom-in">
-        {/* ✅ Added invisible title for accessibility */}
+      <DialogContent
+        className="
+          bg-base/95 border border-accent3/40 rounded-2xl shadow-xl
+          max-w-lg w-full max-h-[85vh] overflow-y-auto
+          animate-in fade-in zoom-in p-4 sm:p-6
+        "
+      >
+        {/* ─────────────── Header ─────────────── */}
         <DialogHeader>
-          <VisuallyHidden>
-            <DialogTitle>Account Modal</DialogTitle>
-          </VisuallyHidden>
+          <DialogTitle>
+            <span className="text-xl font-poetic text-accent1">
+              {isUser(form)
+                ? `Edit Employee: ${form.firstName} ${form.lastName}`
+                : `Edit Branch: ${form.name}`}
+            </span>
+          </DialogTitle>
         </DialogHeader>
 
-        <h2 className="text-xl font-poetic text-accent1 mb-4">
-          {isBranchOrHQ ? "Account Details" : "Edit Account"}: {form.name}
-        </h2>
 
-        {/* ─────────────── HQ / Branch (View Only) ─────────────── */}
-        {isBranchOrHQ ? (
-          <div className="space-y-4">
-            <div>
-              <Label>Email</Label>
-              <p className="text-neutral/80">{form.email || "info@anotherstories.com"}</p>
-            </div>
+        <div className="space-y-4 mt-4 pb-6">
+          {/* ───── Branch Edit Form ───── */}
+          {isBranch(form) && (
+            <>
+              <div>
+                <Label>Branch Name</Label>
+                <Input
+                  value={form.name}
+                  onChange={(e) => handleChange("name", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Manager</Label>
+                <Input
+                  value={form.manager}
+                  onChange={(e) => handleChange("manager", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Phone</Label>
+                <Input
+                  value={form.phone}
+                  onChange={(e) => handleChange("phone", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Address</Label>
+                <Input
+                  value={form.address || ""}
+                  onChange={(e) => handleChange("address", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label>Founded</Label>
+                <Input
+                  type="date"
+                  value={form.founded}
+                  onChange={(e) => handleChange("founded", e.target.value)}
+                />
+              </div>
 
-            <div>
-              <Label>Address</Label>
-              <p className="text-neutral/80">
-                {form.address ||
-                  (form.type === "HQ"
-                    ? "Kurfürstendamm 32, 10719 Berlin, Germany"
-                    : "123 Rue Lafayette, Paris")}
-              </p>
-            </div>
-
-            <div>
-              <Label>Phone</Label>
-              <p className="text-neutral/80">
-                {form.phone || (form.type === "HQ" ? "+49 30 1234 5678" : "+33 1 2345 6789")}
-              </p>
-            </div>
-
-            <div>
-              <Label>Founded</Label>
-              <p className="text-neutral/80">{form.founded || "Since 2018"}</p>
-            </div>
-
-            <Button
-              onClick={() => setOpen(false)}
-              className="w-full bg-accent1 text-white hover:bg-accent1/80 mt-4"
-            >
-              Close
-            </Button>
-          </div>
-        ) : (
-          /* ─────────────── Editable Staff ─────────────── */
-          <div className="space-y-4">
-            {/* Name */}
-            <div>
-              <Label>Name</Label>
-              <Input
-                value={form.name}
-                onChange={(e) => handleChange("name", e.target.value)}
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <Label>Email</Label>
-              <Input
-                value={form.email}
-                onChange={(e) => handleChange("email", e.target.value)}
-              />
-            </div>
-
-            {/* Role */}
-            <div>
-              <Label>Role</Label>
-              <Select
-                onValueChange={(v: string) => handleChange("role", v)}
-                defaultValue={form.role}
+              <Button
+                onClick={handleSubmit}
+                className="w-full bg-accent1 text-white hover:bg-accent1/80 mt-4"
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select role" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="HQ Manager">HQ Manager</SelectItem>
-                  <SelectItem value="Head Office">Head Office (PR / Media / Admin)</SelectItem>
-                  <SelectItem value="Manager">Branch Manager</SelectItem>
-                  <SelectItem value="Full-time">Full-time Staff</SelectItem>
-                  <SelectItem value="Part-time">Part-time Staff</SelectItem>
-                  <SelectItem value="Mini-job">Mini-job Staff</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                Save Branch
+              </Button>
+            </>
+          )}
 
-            {/* Branch */}
-            {isBranchRole && (
+          {/* ───── Employee Edit Form ───── */}
+          {isUser(form) && (
+            <>
+              {form.avatar && (
+                <div className="flex justify-center">
+                  <Image
+                    src={form.avatar}
+                    alt={form.firstName}
+                    width={70}
+                    height={70}
+                    className="rounded-full object-cover border border-accent3/40"
+                  />
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label>First Name</Label>
+                  <Input
+                    value={form.firstName}
+                    onChange={(e) => handleChange("firstName", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label>Last Name</Label>
+                  <Input
+                    value={form.lastName}
+                    onChange={(e) => handleChange("lastName", e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label>Email</Label>
+                <Input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => handleChange("email", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label>Phone</Label>
+                <Input
+                  value={form.phone || ""}
+                  onChange={(e) => handleChange("phone", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label>Address</Label>
+                <Input
+                  value={form.address || ""}
+                  onChange={(e) => handleChange("address", e.target.value)}
+                />
+              </div>
+
               <div>
                 <Label>Branch</Label>
+                <Input
+                  value={form.branchId}
+                  onChange={(e) => handleChange("branchId", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label>Role</Label>
                 <Select
-                  onValueChange={(v: string) => handleChange("branch", v)}
-                  defaultValue={form.branch}
+                  defaultValue={form.role}
+                  onValueChange={(v) => handleChange("role", v)}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select branch" />
+                    <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="Paris">Paris</SelectItem>
-                    <SelectItem value="Vienna">Vienna</SelectItem>
-                    <SelectItem value="Rome">Rome</SelectItem>
-                    <SelectItem value="Copenhagen">Copenhagen</SelectItem>
-                    <SelectItem value="Amsterdam">Amsterdam</SelectItem>
+                    <SelectItem value="HQ Staff">HQ Staff</SelectItem>
+                    <SelectItem value="Branch Manager">Branch Manager</SelectItem>
+                    <SelectItem value="Full-time">Full-time</SelectItem>
+                    <SelectItem value="Part-time">Part-time</SelectItem>
+                    <SelectItem value="Mini-job">Mini-job</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
-            )}
 
-            {/* Start Date */}
-            <div>
-              <Label>Start Date</Label>
-              <Input
-                type="date"
-                value={form.startDate || ""}
-                onChange={(e) => handleChange("startDate", e.target.value)}
-              />
-            </div>
+              {/* Salary */}
+              {["Part-time", "Mini-job"].includes(form.role) ? (
+                <div>
+                  <Label>Hourly Wage (€)</Label>
+                  <Input
+                    type="number"
+                    placeholder="13.50"
+                    value={form.salaryAmount || ""}
+                    onChange={(e) => {
+                      handleChange("salaryType", "hourly")
+                      handleChange("salaryAmount", e.target.value)
+                    }}
+                  />
+                </div>
+              ) : (
+                <div>
+                  <Label>Monthly Salary (€ before tax)</Label>
+                  <Input
+                    type="number"
+                    placeholder="2800"
+                    value={form.salaryAmount || ""}
+                    onChange={(e) => {
+                      handleChange("salaryType", "monthly")
+                      handleChange("salaryAmount", e.target.value)
+                    }}
+                  />
+                </div>
+              )}
 
-            {/* Birthday */}
-            <div>
-              <Label>Birthday</Label>
-              <Input
-                type="date"
-                value={form.birthday || ""}
-                onChange={(e) => handleChange("birthday", e.target.value)}
-              />
-            </div>
-
-            {/* Salary */}
-            {isHourlyRole ? (
               <div>
-                <Label>Hourly Wage (€)</Label>
+                <Label>Bank Account (IBAN)</Label>
                 <Input
-                  type="number"
-                  placeholder="13.50"
-                  value={form.salaryAmount || ""}
-                  onChange={(e) => {
-                    handleChange("salaryType", "hourly")
-                    handleChange("salaryAmount", e.target.value)
-                  }}
+                  placeholder="DE89 3704 0044 0532 0130 00"
+                  value={form.bankNumber || ""}
+                  onChange={(e) => handleChange("bankNumber", e.target.value)}
                 />
               </div>
-            ) : (
+
               <div>
-                <Label>Monthly Salary (before tax, €)</Label>
+                <Label>Joined Date</Label>
                 <Input
-                  type="number"
-                  placeholder="2800"
-                  value={form.salaryAmount || ""}
-                  onChange={(e) => {
-                    handleChange("salaryType", "monthly")
-                    handleChange("salaryAmount", e.target.value)
-                  }}
+                  type="date"
+                  value={form.joined}
+                  onChange={(e) => handleChange("joined", e.target.value)}
                 />
               </div>
-            )}
 
-            {/* Bank Number */}
-            <div>
-              <Label>Bank Account Number (IBAN)</Label>
-              <Input
-                placeholder="DE89 3704 0044 0532 0130 00"
-                value={form.bankNumber || ""}
-                onChange={(e) => handleChange("bankNumber", e.target.value)}
-              />
-            </div>
-
-            <Button
-              onClick={handleSave}
-              className="w-full bg-accent1 text-white hover:bg-accent1/80 mt-4"
-            >
-              Save Changes
-            </Button>
-          </div>
-        )}
+              <Button
+                onClick={handleSubmit}
+                className="w-full bg-accent1 text-white hover:bg-accent1/80 mt-4"
+              >
+                Save Employee
+              </Button>
+            </>
+          )}
+        </div>
       </DialogContent>
     </Dialog>
   )
